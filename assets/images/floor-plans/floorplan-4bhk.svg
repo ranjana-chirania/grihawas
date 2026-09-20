@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 750">
+  <defs>
+    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#EFEAE0"/>
+      <stop offset="100%" stop-color="#DCD4C2"/>
+    </linearGradient>
+    <pattern id="lines" width="42" height="42" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+      <line x1="0" y1="0" x2="0" y2="42" stroke="#ffffff" stroke-opacity="0.06" stroke-width="20"/>
+    </pattern>
+  </defs>
+  <rect width="1000" height="750" fill="url(#g)"/>
+  <rect width="1000" height="750" fill="url(#lines)"/>
+  <g font-family="Georgia, serif" fill="#1F3A34">
+    <text x="50%" y="46%" font-size="56" text-anchor="middle" fill-opacity="0.92">4 BHK Floor Plan</text>
+    <text x="50%" y="56%" font-size="24" text-anchor="middle" fill-opacity="0.7" font-family="Arial, sans-serif">PLACEHOLDER — replace with actual layout drawing</text>
+  </g>
+</svg>

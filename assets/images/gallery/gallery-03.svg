@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900">
+  <defs>
+    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#16302B"/>
+      <stop offset="100%" stop-color="#A9793F"/>
+    </linearGradient>
+    <pattern id="lines" width="42" height="42" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+      <line x1="0" y1="0" x2="0" y2="42" stroke="#ffffff" stroke-opacity="0.06" stroke-width="20"/>
+    </pattern>
+  </defs>
+  <rect width="1200" height="900" fill="url(#g)"/>
+  <rect width="1200" height="900" fill="url(#lines)"/>
+  <g font-family="Georgia, serif" fill="#ffffff">
+    <text x="50%" y="46%" font-size="67" text-anchor="middle" fill-opacity="0.92">Entrance Plaza</text>
+    <text x="50%" y="56%" font-size="28" text-anchor="middle" fill-opacity="0.7" font-family="Arial, sans-serif">PLACEHOLDER — exterior category</text>
+  </g>
+</svg>
