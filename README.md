@@ -10,7 +10,7 @@ Serve this directory with any static web server and open `index.html`. For examp
 npx serve .
 ```
 
-The site has no build step or runtime package dependency.
+The frontend is a static website, while the application form uses a Node.js/Express backend with MongoDB Atlas.
 
 ## Structure
 
@@ -24,9 +24,28 @@ The site has no build step or runtime package dependency.
 
 ## Forms and application status
 
-Frontend validation is active. No CRM or customer-record backend is included in this static project. Until `FORM_ENDPOINT` is connected in `assets/js/config.js`, forms accurately direct visitors to the published phone number and email instead of reporting a false submission. The Results page likewise directs applicants to the project team for a verified status update.
+The Apply Now form includes frontend validation and submits application details to the Node.js/Express backend.
 
-Never add API keys or CRM secrets to frontend files.
+Application data is stored securely in MongoDB Atlas.
+
+The application form collects:
+
+- Full Name
+- Phone Number
+- Email
+- Property
+- Visit Date
+- Configuration
+- Budget
+- Message
+
+The backend API endpoint is:
+
+`POST /api/apply`
+
+Sensitive database credentials are stored in `.env` and are excluded from GitHub using `.gitignore`.
+
+Never add API keys, database credentials or other secrets to frontend files.
 
 ## Content maintenance
 
