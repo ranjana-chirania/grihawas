@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Login - Grihawas</title>
+
+    <style>
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #f5f1e8;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+      }
+
+      .login-box {
+        width: 360px;
+        background: white;
+        padding: 35px;
+        border-radius: 12px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+      }
+
+      h2 {
+        text-align: center;
+        margin-bottom: 25px;
+        color: #173d35;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 7px;
+        font-weight: 600;
+      }
+
+      input {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 12px;
+        margin-bottom: 18px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        font-size: 15px;
+      }
+
+      button {
+        width: 100%;
+        padding: 12px;
+        border: none;
+        border-radius: 6px;
+        background: #b9853f;
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+      }
+
+      button:hover {
+        opacity: 0.9;
+      }
+
+      #loginMessage {
+        text-align: center;
+        margin-top: 15px;
+        color: #b00020;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="login-box">
+      <h2>Admin Login</h2>
+
+      <form id="adminLoginForm">
+        <label for="email">Email</label>
+        <input
+          type="email"
+          id="email"
+          placeholder="Enter admin email"
+          required
+        />
+
+        <label for="password">Password</label>
+        <input
+          type="password"
+          id="password"
+          placeholder="Enter admin password"
+          required
+        />
+
+        <button type="submit">Login</button>
+
+        <p id="loginMessage"></p>
+      </form>
+      <script>
+        document
+          .getElementById("adminLoginForm")
+          .addEventListener("submit", async function (e) {
+            e.preventDefault();
+
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+            const message = document.getElementById("loginMessage");
+
+            try {
+              const response = await fetch(
+                "http://localhost:5000/api/admin/login",
+                {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({
+                    username: email,
+                    password: password,
+                  }),
+                },
+              );
+
+              const result = await response.json();
+
+              if (result.success) {
+                localStorage.setItem("adminToken", result.token);
+
+                window.location.href = "admin-dashboard.html";
+              } else {
+                message.textContent = result.message;
+              }
+            } catch (error) {
+              console.error("Login error:", error);
+              message.textContent = "Server se connection nahi ho pa raha.";
+            }
+          });
+      </script>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard - Grihawas</title>
+
+    <style>
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #f5f1e8;
+        color: #173d35;
+      }
+
+      header {
+        background: #173d35;
+        color: white;
+        padding: 20px 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      header h1 {
+        margin: 0;
+        font-size: 24px;
+      }
+
+      #logoutBtn {
+        background: #b9853f;
+        color: white;
+        border: none;
+        padding: 10px 18px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: bold;
+      }
+
+      .container {
+        padding: 30px;
+        overflow-x: auto;
+      }
+
+      h2 {
+        margin-bottom: 20px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+      }
+
+      th,
+      td {
+        padding: 12px;
+        border: 1px solid #ddd;
+        text-align: left;
+      }
+
+      th {
+        background: #173d35;
+        color: white;
+      }
+
+      tr:nth-child(even) {
+        background: #f9f9f9;
+      }
+
+      #message {
+        margin-bottom: 20px;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+
+  <body>
+    <header>
+      <h1>Grihawas Admin Dashboard</h1>
+      <button id="logoutBtn">Logout</button>
+    </header>
+
+    <div class="container">
+      <h2>Registered Applicants</h2>
+
+      <p id="message">Loading applications...</p>
+
+      <table id="applicationsTable" style="display: none">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Phone</th>
+            <th>Email</th>
+            <th>Property</th>
+            <th>Visit Date</th>
+            <th>Configuration</th>
+            <th>Budget</th>
+            <th>Message</th>
+            <th>Applied On</th>
+          </tr>
+        </thead>
+
+        <tbody id="applicationsBody"></tbody>
+      </table>
+    </div>
+    <script>
+      const token = localStorage.getItem("adminToken");
+
+      if (!token) {
+        window.location.href = "admin-login.html";
+      }
+
+      async function loadApplications() {
+        const message = document.getElementById("message");
+        const table = document.getElementById("applicationsTable");
+        const tbody = document.getElementById("applicationsBody");
+
+        try {
+          const response = await fetch(
+            "http://localhost:5000/api/admin/applications",
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            },
+          );
+
+          const result = await response.json();
+
+          if (!result.success) {
+            message.textContent = result.message;
+            return;
+          }
+
+          tbody.innerHTML = "";
+
+          if (result.applications.length === 0) {
+            message.textContent = "No applications found.";
+            return;
+          }
+
+          result.applications.forEach((application) => {
+            const row = document.createElement("tr");
+
+            row.innerHTML = `
+          <td>${application.fullName || ""}</td>
+          <td>${application.phone || ""}</td>
+          <td>${application.email || ""}</td>
+          <td>${application.property || ""}</td>
+          <td>${application.visitDate || ""}</td>
+          <td>${application.configuration || ""}</td>
+          <td>${application.budget || ""}</td>
+          <td>${application.message || ""}</td>
+          <td>${new Date(application.createdAt).toLocaleString()}</td>
+        `;
+
+            tbody.appendChild(row);
+          });
+
+          message.textContent = "";
+          table.style.display = "table";
+        } catch (error) {
+          console.error("Dashboard error:", error);
+          message.textContent = "Applications load nahi ho pa rahi hain.";
+        }
+      }
+
+      document.getElementById("logoutBtn").addEventListener("click", () => {
+        localStorage.removeItem("adminToken");
+        window.location.href = "admin-login.html";
+      });
+
+      loadApplications();
+    </script>
+  </body>
+</html>

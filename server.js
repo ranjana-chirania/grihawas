@@ -3,6 +3,8 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const cors = require("cors");
 
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 dotenv.config();
 
 const app = express();
@@ -63,17 +65,130 @@ const applicationSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 // MongoDB collection
 const Application = mongoose.model("Application", applicationSchema);
+const adminSchema = new mongoose.Schema({
+  username: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  password: {
+    type: String,
+    required: true,
+  },
+});
+
+const Admin = mongoose.model("Admin", adminSchema);
+async function createAdmin() {
+  try {
+    const existingAdmin = await Admin.findOne({
+      username: process.env.ADMIN_EMAIL,
+    });
+
+    if (!existingAdmin) {
+      const hashedPassword = await bcrypt.hash(process.env.ADMIN_PASSWORD, 10);
+
+      await Admin.create({
+        username: process.env.ADMIN_EMAIL,
+        password: hashedPassword,
+      });
+
+      console.log("Admin account created successfully");
+    }
+  } catch (error) {
+    console.error("Admin creation error:", error);
+  }
+}
 
 // Test route
 app.get("/", (req, res) => {
   res.send("Server is running");
 });
 
+// Admin login
+app.post("/api/admin/login", async (req, res) => {
+  try {
+    const { username, password } = req.body;
+
+    const admin = await Admin.findOne({ username });
+
+    if (!admin) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid username or password",
+      });
+    }
+
+    const isMatch = await bcrypt.compare(password, admin.password);
+
+    if (!isMatch) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid username or password",
+      });
+    }
+
+    const token = jwt.sign({ adminId: admin._id }, process.env.JWT_SECRET, {
+      expiresIn: "2h",
+    });
+
+    res.json({
+      success: true,
+      token: token,
+    });
+  } catch (error) {
+    console.error("Admin login error:", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Login failed",
+    });
+  }
+});
+function verifyAdmin(req, res, next) {
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return res.status(401).json({
+      success: false,
+      message: "Unauthorized",
+    });
+  }
+
+  const token = authHeader.split(" ")[1];
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.adminId = decoded.adminId;
+    next();
+  } catch (error) {
+    return res.status(401).json({
+      success: false,
+      message: "Invalid or expired token",
+    });
+  }
+}
+app.get("/api/admin/applications", verifyAdmin, async (req, res) => {
+  try {
+    const applications = await Application.find().sort({ createdAt: -1 });
+
+    res.json({
+      success: true,
+      applications: applications,
+    });
+  } catch (error) {
+    console.error("Fetch applications error:", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch applications",
+    });
+  }
+});
 // Registration/Application API
 app.post("/api/apply", async (req, res) => {
   try {
@@ -103,6 +218,8 @@ app.post("/api/apply", async (req, res) => {
     });
   }
 });
+
+createAdmin();
 
 const PORT = 5000;
 
